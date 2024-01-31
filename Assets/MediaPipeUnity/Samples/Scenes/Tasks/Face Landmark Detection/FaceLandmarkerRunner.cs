@@ -211,7 +211,7 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
       float speed = 5f;
 
 
-      float MouthCloseRecalculated = (100 - (JawOpen * 100)) - 61;
+      float MouthCloseRecalculated = (100 - (JawOpen * 100)) - 30;
 
       skinnedMeshRenderer.SetBlendShapeWeight(
      skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Close"),

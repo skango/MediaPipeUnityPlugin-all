@@ -24,6 +24,7 @@ namespace Mediapipe.Unity.Sample.Holistic
     public List<GameObject> landmarkPoints = new List<GameObject>();
     public GameObject Humanoid,PointListAnotation;
     public List<GameObject> targets = new List<GameObject>();
+    bool firsttime = true;
     public HolisticTrackingGraph.ModelComplexity modelComplexity
     {
       get => graphRunner.modelComplexity;
@@ -176,8 +177,15 @@ namespace Mediapipe.Unity.Sample.Holistic
             PointListAnotation.transform.GetChild(14).gameObject;*/
           for (int i = 0; i < landmarkPoints.Count; i++)
           {
-            landmarkPoints[i] = PointListAnotation.transform.GetChild(i).gameObject;
+            if (firsttime)
+            {
+              GameObject newpoint = Instantiate(new GameObject(), PointListAnotation.transform);
+              landmarkPoints[i] = newpoint;
+            }
+            landmarkPoints[i].transform.position = Vector3.Lerp(landmarkPoints[i].transform.position,
+              PointListAnotation.transform.GetChild(i).transform.position,5 * Time.deltaTime);
           }
+          firsttime = false;
         }
       }
     }

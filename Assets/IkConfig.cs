@@ -5,6 +5,7 @@ using RootMotion;
 using RootMotion.FinalIK;
 using Mediapipe.Unity.Sample.Holistic;
 using System.Linq;
+using static Mediapipe.CopyCalculatorOptions.Types;
 
 
 public class IkConfig : MonoBehaviour
@@ -17,6 +18,7 @@ public class IkConfig : MonoBehaviour
   public List<GameObject> RhandIkSources = new List<GameObject>();
   List<Vector3> previousPositions;
   public float scaleRatio = -1;
+  public Transform IkParent; // The virtual parent transform
 
   IEnumerator Start()
   {
@@ -60,21 +62,13 @@ public class IkConfig : MonoBehaviour
         scaleRatio = 0.0005f;
        
         deltaPosition *= scaleRatio;
-
-        // Convert the deltaPosition to the local space of the avatar's hand
-        //Vector3 localDelta = ik.references.rightHand.InverseTransformDirection(deltaPosition);
-
-        // Assuming deltaPosition is the movement delta obtained from MediaPipe data
-        //Vector3 worldPosition = ik.references.rightHand.TransformPoint(deltaPosition);
-        //Vector3 newPositionRelativeToNewParent = RhandIkTargets[i].transform.parent.InverseTransformPoint(worldPosition);
-
-
-        // Apply the localDelta to move the IK target
-        RhandIkTargets[i].transform.localPosition = deltaPosition;
+        // Combine the scaled delta position with the virtual parent's transform
+        Vector3 worldPosition = IkParent.TransformPoint(deltaPosition);
+        RhandIkTargets[i].transform.position = worldPosition;
 
         // Update the previous position for the next frame
         previousPositions[i] = currentPosition;
-        
+
       }
 
 
