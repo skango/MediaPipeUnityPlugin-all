@@ -10,6 +10,10 @@ using UnityEngine;
 using Mediapipe.Tasks.Vision.FaceLandmarker;
 using UnityEngine.Rendering;
 using Newtonsoft.Json.Linq;
+using System;
+using UnityEngine.Networking;
+using UnityEngine.UI;
+using UnityEditor.PackageManager.Requests;
 
 namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
 {
@@ -22,6 +26,7 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
     public readonly FaceLandmarkDetectionConfig config = new FaceLandmarkDetectionConfig();
     public SkinnedMeshRenderer DemoModel;
     string faceBlendshapeJson;
+    public RenderTexture sourceRenderTexture;
 
     public override void Stop()
     {
@@ -30,8 +35,93 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
       _textureFramePool = null;
     }
 
+
+    IEnumerator HandleScreens()
+    {
+      yield return new WaitForEndOfFrame();
+
+
+      // Set the source RenderTexture as active so we can read from it
+      RenderTexture.active = sourceRenderTexture;
+
+      // Create a new Texture2D with the width and height of the RenderTexture
+      Texture2D screenTexture = new Texture2D(sourceRenderTexture.width, sourceRenderTexture.height, TextureFormat.RGB24, false);
+
+      // Read pixels from the RenderTexture into the Texture2D
+      screenTexture.ReadPixels(new UnityEngine.Rect(0, 0, sourceRenderTexture.width, sourceRenderTexture.height), 0, 0);
+      screenTexture.Apply();
+
+      // Compress the texture
+      byte[] bytes = screenTexture.EncodeToJPG();
+
+      // Reset the active RenderTexture to null after reading
+      RenderTexture.active = null;
+
+      yield return SendImageToAPI(bytes);
+      //yield return SendImageToAPIMovement(bytes);
+
+      // Clean up
+      Destroy(screenTexture);
+      //Destroy(resizedTexture);
+    }
+
+   
+
+    private Texture2D ResizeTexture(Texture2D source, int newWidth, int newHeight)
+    {
+      source.filterMode = FilterMode.Bilinear;
+      RenderTexture rt = RenderTexture.GetTemporary(newWidth, newHeight);
+      rt.filterMode = FilterMode.Bilinear;
+      RenderTexture.active = rt;
+      Graphics.Blit(source, rt);
+      Texture2D newTexture = new Texture2D(newWidth, newHeight);
+      newTexture.ReadPixels(new  UnityEngine.Rect(0, 0, newWidth, newHeight), 0, 0);
+      newTexture.Apply();
+      RenderTexture.active = null;
+      RenderTexture.ReleaseTemporary(rt);
+      return newTexture;
+    }
+
+    private IEnumerator SendImageToAPI(byte[] imageBytes)
+    {
+      string url = "https://satesto.top/api/geoPlus/face-ai";
+      WWWForm form = new WWWForm();
+      form.AddBinaryData("image", imageBytes);
+      UnityWebRequest www = UnityWebRequest.Post(url, form);
+      www.SetRequestHeader("Authorization", "bearer " + 
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjIzM2E4OWY1Nzg0MjkzMjMyYzllNiIsImlhdCI6MTcwNTQ5MzA4NywiZXhwIjoxNzA4MDg1MDg3fQ.Bzl46b32M1nvyc5tHQ9RLk8TpkBFNFC5qRKPAKGTdgc");
+      //www.SetRequestHeader("Content-Type", "application/octet-stream");
+      // Add any additional headers or API keys if required
+      yield return www.SendWebRequest();
+
+      if (www.result != UnityWebRequest.Result.Success)
+      {
+        Debug.Log("Error: " + www.error);
+      }
+      else
+      {
+        faceBlendshapeJson = www.downloadHandler.text;
+       
+        Debug.Log("AI FACE Image sent successfully " + faceBlendshapeJson);
+      }
+    }
+
     protected override IEnumerator Run()
     {
+
+
+      //API OVVERRIDE
+      #region API
+
+
+      while (true)
+      {
+         StartCoroutine(HandleScreens());       
+        yield return new WaitForSeconds(0.1f);
+      }
+
+      #endregion
+
       Debug.Log($"Delegate = {config.Delegate}");
       Debug.Log($"Running Mode = {config.RunningMode}");
       Debug.Log($"NumFaces = {config.NumFaces}");
@@ -130,7 +220,7 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
 
     private void OnFaceLandmarkDetectionOutput(FaceLandmarkerResult result, Image image, long timestamp)
     {
-      Debug.Log("FACE LANDMARKER OUTPUT GOT");
+      Debug.Log("FACE LANDMARKER OUTPUT GOT ");
       if (result.faceBlendshapes != null)
       {
         Debug.Log("BLANDSHAPES: " + result.faceBlendshapes);
@@ -211,12 +301,11 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
       float speed = 5f;
 
 
-      float MouthCloseRecalculated = (100 - (JawOpen * 100)) - 30;
+      float MouthCloseRecalculated = (100 - (JawOpen * 100)) - 50;
 
       skinnedMeshRenderer.SetBlendShapeWeight(
      skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Close"),
-     Mathf.Lerp(GetBlendshapeValue("Mouth_Close"), MouthCloseRecalculated < 36 ? 0 :
-     MouthCloseRecalculated, speed * Time.deltaTime));
+     Mathf.Lerp(GetBlendshapeValue("Mouth_Close"), (MouthClose * 100) + 30, speed * Time.deltaTime));
 
       skinnedMeshRenderer.SetBlendShapeWeight(
      skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Roll_In_Upper_L"),

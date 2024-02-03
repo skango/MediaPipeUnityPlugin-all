@@ -120,7 +120,7 @@ namespace Mediapipe.Unity.Sample.Holistic
       var packet = eventArgs.packet;
       var value = packet == null ? default : packet.Get(Detection.Parser);
       _poseDetectionAnnotationController.DrawLater(value);
-      
+    
     }
 
     private void OnFaceLandmarksOutput(object stream, OutputStream<NormalizedLandmarkList>.OutputEventArgs eventArgs)
@@ -146,7 +146,7 @@ namespace Mediapipe.Unity.Sample.Holistic
         for (int i = 0; i < 33; i++)
         {
           GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-          sphere.transform.localScale = Vector3.one * 0.2f;
+          sphere.transform.localScale = Vector3.one * 0f;
           sphere.transform.parent = Humanoid.transform;
           sphere.transform.localPosition = Vector3.zero;
 

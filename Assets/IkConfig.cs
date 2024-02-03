@@ -76,14 +76,26 @@ public class IkConfig : MonoBehaviour
   }
   public void ConfigureIk()
   {
-    ik.solver.spine.headTarget = solution.landmarkPoints[0].transform;
+    GameObject head = new GameObject("HEAD Simulator");
+    head.transform.parent = solution.landmarkPoints[0].transform;
+    head.transform.localPosition = new Vector3(0, 0, 10f);
+    head.transform.localRotation = Quaternion.Euler(0, -1.6f, 0);
+    ik.solver.spine.headTarget = head.transform;
     ik.solver.leftArm.target = solution.landmarkPoints[16].transform;
     ik.solver.rightArm.target = solution.landmarkPoints[15].transform;
-    ik.solver.leftLeg.target = solution.landmarkPoints[28].transform;
-    ik.solver.rightLeg.target = solution.landmarkPoints[27].transform;
+    ik.solver.leftLeg.target = solution.landmarkPoints[32].transform;
+    ik.solver.rightLeg.target = solution.landmarkPoints[31].transform;
     ik.solver.leftArm.bendGoal = solution.landmarkPoints[14].transform;
     ik.solver.rightArm.bendGoal = solution.landmarkPoints[13].transform;
     ik.solver.leftLeg.bendGoal = solution.landmarkPoints[26].transform;
     ik.solver.rightLeg.bendGoal = solution.landmarkPoints[25].transform;
+    GameObject pelvis = new GameObject("Pelvis Simulator");
+    pelvis.transform.parent = solution.landmarkPoints[25].transform;
+    pelvis.transform.localPosition = new Vector3(5f, 25f, 4);
+    ik.solver.spine.pelvisTarget = pelvis.transform;
+    GameObject chest = new GameObject("Chest Simulator");
+    chest.transform.parent = solution.landmarkPoints[12].transform;
+    chest.transform.localPosition = new Vector3(5f, -5f, 0);
+    ik.solver.spine.chestGoal = chest.transform;
   }
 }
