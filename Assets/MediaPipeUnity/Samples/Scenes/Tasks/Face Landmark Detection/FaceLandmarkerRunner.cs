@@ -113,13 +113,14 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
       //API OVVERRIDE
       #region API
 
-
+      /*
       while (true)
       {
          StartCoroutine(HandleScreens());       
         yield return new WaitForSeconds(0.1f);
       }
-
+      */
+      yield break;
       #endregion
 
       Debug.Log($"Delegate = {config.Delegate}");
@@ -224,14 +225,14 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
       if (result.faceBlendshapes != null)
       {
         Debug.Log("BLANDSHAPES: " + result.faceBlendshapes);
-        ProcessBlendshaepes(result.faceBlendshapes[0].ToString());
+        //ProcessBlendshaepes(result.faceBlendshapes[0].ToString());
         _faceLandmarkerResultAnnotationController.DrawLater(result);
       }
     }
 
     private void Update()
     {
-      if (faceBlendshapeJson != null)
+      if (!string.IsNullOrEmpty(faceBlendshapeJson))
       {
         ApplyFaceBlendhsapes(JObject.Parse(faceBlendshapeJson), DemoModel);
       }
@@ -305,7 +306,8 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
 
       skinnedMeshRenderer.SetBlendShapeWeight(
      skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Close"),
-     Mathf.Lerp(GetBlendshapeValue("Mouth_Close"), (MouthClose * 100) + 30, speed * Time.deltaTime));
+     Mathf.Lerp(GetBlendshapeValue("Mouth_Close"), MouthCloseRecalculated < 36 ? 0 :
+       MouthCloseRecalculated, speed * Time.deltaTime));
 
       skinnedMeshRenderer.SetBlendShapeWeight(
      skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Roll_In_Upper_L"),
@@ -315,7 +317,7 @@ namespace Mediapipe.Unity.Sample.FaceLandmarkDetection
           skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Roll_In_Upper_R"),
           Mathf.Lerp(GetBlendshapeValue("Mouth_Roll_In_Upper_R"), mouthRollUpper * 100, speed * Time.deltaTime));
 
-      /*skinnedMeshRenderer.SetBlendShapeWeight(
+     /* skinnedMeshRenderer.SetBlendShapeWeight(
           skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex("Mouth_Roll_In_Down_L"),
           Mathf.Lerp(GetBlendshapeValue("Mouth_Roll_In_Down_L"), mouthRollLower * 100, speed * Time.deltaTime));
 
