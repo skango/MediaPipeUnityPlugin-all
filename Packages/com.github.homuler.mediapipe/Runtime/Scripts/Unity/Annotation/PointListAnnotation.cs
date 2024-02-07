@@ -50,7 +50,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(target); }
+          if (annotation != null)
+          { annotation.Draw(target); }
         });
       }
     }
@@ -61,7 +62,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(target, scale, visualizeZ); }
+          if (annotation != null)
+          { annotation.Draw(target, scale, visualizeZ); }
         });
       }
     }
@@ -77,7 +79,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(target, visualizeZ); }
+          if (annotation != null)
+          { annotation.Draw(target, visualizeZ); }
         });
       }
     }
@@ -93,7 +96,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(in target, visualizeZ); }
+          if (annotation != null)
+          { annotation.Draw(in target, visualizeZ); }
         });
       }
     }
@@ -106,7 +110,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(target, threshold); }
+          if (annotation != null)
+          { annotation.Draw(target, threshold); }
         });
       }
     }
@@ -117,7 +122,8 @@ namespace Mediapipe.Unity
       {
         CallActionForAll(targets, (annotation, target) =>
         {
-          if (annotation != null) { annotation.Draw(target, threshold); }
+          if (annotation != null)
+          { annotation.Draw(target, threshold); }
         });
       }
     }
@@ -134,7 +140,8 @@ namespace Mediapipe.Unity
     {
       foreach (var point in children)
       {
-        if (point != null) { point.SetColor(color); }
+        if (point != null)
+        { point.SetColor(color); }
       }
     }
 
@@ -142,7 +149,8 @@ namespace Mediapipe.Unity
     {
       foreach (var point in children)
       {
-        if (point != null) { point.SetRadius(radius); }
+        if (point != null)
+        { point.SetRadius(radius); }
       }
     }
   }

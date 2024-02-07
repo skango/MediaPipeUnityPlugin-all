@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Mediapipe.Unity
@@ -33,6 +34,8 @@ namespace Mediapipe.Unity
 
     public void Fill(int count)
     {
+      _children = GetComponentsInChildren<T>().ToList();
+
       while (children.Count < count)
       {
         children.Add(InstantiateChild(false));
