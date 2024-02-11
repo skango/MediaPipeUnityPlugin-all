@@ -5,47 +5,46 @@ using UnityEngine;
 
 public class RigMimic : MonoBehaviour
 {
-  [SerializeField] private Transform _target;
-  [SerializeField] private Transform _mimic;
+  private Transform _target;
 
-  private List<Transform> _targetBones = new List<Transform>();
-  private List<Transform> _mimicBones = new List<Transform>();
+  private Dictionary<Transform, Transform> _targetToMimicMap = new Dictionary<Transform, Transform>();
 
-  // Dictionary to store the smoothing factors for each bone
-  private Dictionary<Transform, float> _positionSmoothingFactors = new Dictionary<Transform, float>();
-  private Dictionary<Transform, float> _rotationSmoothingFactors = new Dictionary<Transform, float>();
-
-  // Smoothing parameters
-  [SerializeField] private float _defaultPositionSmoothness = 5f;
   [SerializeField] private float _minPositionSmoothness = 1f;
   [SerializeField] private float _maxPositionSmoothness = 7f;
 
-  [SerializeField] private float _defaultRotationSmoothness = 5f;
   [SerializeField] private float _minRotationSmoothness = 1f;
   [SerializeField] private float _maxRotationSmoothness = 7f;
 
   private void Awake()
   {
-    _targetBones = _target.GetComponentsInChildren<Transform>(includeInactive: true).ToList();
-    _mimicBones = _mimic.GetComponentsInChildren<Transform>(includeInactive: true).ToList();
-
-    // Initialize smoothing factors for each bone
-    foreach (Transform bone in _mimicBones)
+    if (_target == null)
     {
-      _positionSmoothingFactors[bone] = _defaultPositionSmoothness;
-      _rotationSmoothingFactors[bone] = _defaultRotationSmoothness;
+      _target = GameObject.Find("RawAvatar").transform;
+    }
+
+    Animator targetAnimator = _target.GetComponent<Animator>();
+    Animator mimicAnimator = transform.GetComponent<Animator>();
+
+    HumanBodyBones[] allBones = (HumanBodyBones[]) System.Enum.GetValues(typeof(HumanBodyBones));
+
+    foreach (HumanBodyBones bone in allBones)
+    {
+      Transform boneTransformA = targetAnimator.GetBoneTransform(bone);
+      Transform boneTransformB = mimicAnimator.GetBoneTransform(bone);
+
+      if (boneTransformA != null && boneTransformB != null)
+      {
+        _targetToMimicMap.Add(boneTransformA, boneTransformB);
+      }
     }
   }
 
   private void Update()
   {
-    for (int i = 0; i < _targetBones.Count; i++)
+    foreach (var mapEntry in _targetToMimicMap)
     {
-      if (!_mimicBones[i].gameObject.activeInHierarchy)
-        continue;
-
-      Transform targetBone = _targetBones[i];
-      Transform mimicBone = _mimicBones[i];
+      Transform targetBone = mapEntry.Key;
+      Transform mimicBone = mapEntry.Value;
 
       // Calculate the magnitude of position and rotation movement for this bone
       float positionMovementMagnitude = Vector3.Distance(mimicBone.localPosition, targetBone.localPosition);
