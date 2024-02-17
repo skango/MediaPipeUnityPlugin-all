@@ -18,12 +18,8 @@ public class FingerIK : MonoBehaviour
   [Header("3D Configurations")]
   public float CurrentDistance;
   [SerializeField] private float _lerpSpeed;
-  [SerializeField] private float _maxX;
-  [SerializeField] private float _minX;
-  [SerializeField] private float _maxY;
-  [SerializeField] private float _minY;
-  [SerializeField] private float _maxZ;
-  [SerializeField] private float _minZ;
+  [SerializeField] private Vector3 _maxPosition;
+  [SerializeField] private Vector3 _minPosition;
 
   private void Update()
   {
@@ -33,9 +29,9 @@ public class FingerIK : MonoBehaviour
     CurrentRefStretch = Mathf.Clamp((CurrentRefDistance - _minRefDistance) / (_maxRefDistance - _minRefDistance), 0f, 1f);
 
     // Interpolate between min and max values based on CurrentRefStretch
-    float x = Mathf.Lerp(_maxX, _minX, CurrentRefStretch);
-    float y = Mathf.Lerp(_maxY, _minY, CurrentRefStretch);
-    float z = Mathf.Lerp(_maxZ, _minZ, CurrentRefStretch);
+    float x = Mathf.Lerp(_minPosition.x, _maxPosition.x, CurrentRefStretch);
+    float y = Mathf.Lerp(_minPosition.y, _maxPosition.y, CurrentRefStretch);
+    float z = Mathf.Lerp(_minPosition.z, _maxPosition.z, CurrentRefStretch);
 
     // Move the transform locally
     Vector3 targetPosition = new Vector3(x, y, z);

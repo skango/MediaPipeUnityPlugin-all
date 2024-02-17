@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 public class RigMimic : MonoBehaviour
 {
-  private Transform _target;
+  [SerializeField] private Transform _target;
 
   private Dictionary<Transform, Transform> _targetToMimicMap = new Dictionary<Transform, Transform>();
 
@@ -25,16 +26,26 @@ public class RigMimic : MonoBehaviour
     Animator targetAnimator = _target.GetComponent<Animator>();
     Animator mimicAnimator = transform.GetComponent<Animator>();
 
+    targetAnimator.enabled = false;
+    mimicAnimator.enabled = false;
+
     HumanBodyBones[] allBones = (HumanBodyBones[]) System.Enum.GetValues(typeof(HumanBodyBones));
 
     foreach (HumanBodyBones bone in allBones)
     {
-      Transform boneTransformA = targetAnimator.GetBoneTransform(bone);
-      Transform boneTransformB = mimicAnimator.GetBoneTransform(bone);
-
-      if (boneTransformA != null && boneTransformB != null)
+      try
       {
-        _targetToMimicMap.Add(boneTransformA, boneTransformB);
+        Transform boneTransformA = targetAnimator.GetBoneTransform(bone);
+        Transform boneTransformB = mimicAnimator.GetBoneTransform(bone);
+
+        if (boneTransformA != null && boneTransformB != null)
+        {
+          _targetToMimicMap.Add(boneTransformA, boneTransformB);
+        }
+      }
+      catch(Exception ex)
+      {
+        Debug.Log($"TESTING {ex.Message}");
       }
     }
   }
@@ -46,8 +57,13 @@ public class RigMimic : MonoBehaviour
       Transform targetBone = mapEntry.Key;
       Transform mimicBone = mapEntry.Value;
 
-      // Calculate the magnitude of position and rotation movement for this bone
-      float positionMovementMagnitude = Vector3.Distance(mimicBone.localPosition, targetBone.localPosition);
+      if (transform == targetBone || transform == mimicBone)
+      {
+        continue;
+      }
+
+        // Calculate the magnitude of position and rotation movement for this bone
+        float positionMovementMagnitude = Vector3.Distance(mimicBone.localPosition, targetBone.localPosition);
       float rotationMovementMagnitude = Quaternion.Angle(mimicBone.localRotation, targetBone.localRotation);
 
       // Calculate the smoothing factors based on movement magnitudes

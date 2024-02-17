@@ -86,6 +86,8 @@ namespace Mediapipe.Unity.Sample.UI
         return;
       }
 
+
+
       var options = new List<string>(sourceNames);
       _sourceInput.AddOptions(options);
 
@@ -144,6 +146,7 @@ namespace Mediapipe.Unity.Sample.UI
 
       var imageSource = ImageSourceProvider.ImageSource;
       _isHorizontallyFlippedInput.isOn = imageSource.isHorizontallyFlipped;
+
       _isHorizontallyFlippedInput.onValueChanged.AddListener(delegate
       {
         imageSource.isHorizontallyFlipped = _isHorizontallyFlippedInput.isOn;
