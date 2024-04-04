@@ -12,6 +12,8 @@ public class FingerIK : MonoBehaviour
   [Header("2D Configurations")]
   public float CurrentRefDistance;
   public float CurrentRefStretch;
+  public float AdditionalStretch;
+  public float PalmRotationZ;
   [SerializeField] private float _maxRefDistance;
   [SerializeField] private float _minRefDistance;
 
@@ -26,7 +28,13 @@ public class FingerIK : MonoBehaviour
     CurrentRefDistance = Vector3.Distance(_referencePoint.position, _referencePalm.position);
     CurrentDistance = Vector3.Distance(_currentPalm.position, transform.position);
 
-    CurrentRefStretch = Mathf.Clamp((CurrentRefDistance - _minRefDistance) / (_maxRefDistance - _minRefDistance), 0f, 1f);
+
+    // Calculate the additional stretch based on the palm's local rotation
+    float zRotation = _currentPalm.localEulerAngles.z;
+    PalmRotationZ = (zRotation > 180) ? zRotation - 360 : zRotation;
+
+    AdditionalStretch = Mathf.Clamp(Mathf.Abs(PalmRotationZ) / 90, 0, 1);
+    CurrentRefStretch = Mathf.Clamp((CurrentRefDistance - _minRefDistance) / (_maxRefDistance - _minRefDistance) + AdditionalStretch, 0f, 1f);
 
     // Interpolate between min and max values based on CurrentRefStretch
     float x = Mathf.Lerp(_minPosition.x, _maxPosition.x, CurrentRefStretch);

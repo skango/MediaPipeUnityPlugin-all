@@ -9,7 +9,7 @@ public class DistanceCheck : MonoBehaviour
 
   private void Update()
   {
-    Distance = Vector3.Distance(Target.position, transform.position);
+    Distance = Vector3.Distance(new Vector3(Target.position.x, 0, 0), new Vector3(transform.position.x, 0, 0));
 
   }
 }

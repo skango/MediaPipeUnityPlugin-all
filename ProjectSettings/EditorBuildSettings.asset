@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/MediaPipeUnity/Samples/Scenes/Pose Tracking/Pose Tracking.unity
     guid: a4964d5b8866fb3d8bd4c715728200c8
   - enabled: 1
-    path: Assets/MediaPipeUnity/Samples/Scenes/Holistic/Holistic.unity
+    path: Assets/Dev/Scene/Holistic.unity
     guid: 530502d398830609297010a1521c815f
   - enabled: 1
     path: Assets/MediaPipeUnity/Samples/Scenes/Selfie Segmentation/Selfie Segmentation.unity
