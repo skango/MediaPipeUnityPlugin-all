@@ -6,6 +6,7 @@ public class RigMovement : MonoBehaviour
 {
   [SerializeField] private DepthCalculator _depthCalculator;
   [SerializeField] private float _depthMovementModifier;
+  [SerializeField] private float _horizontalMovementModifier;
   [SerializeField] private float _movementSmoothSpeed;
 
   private Vector3 _startingLocation;
@@ -24,7 +25,9 @@ public class RigMovement : MonoBehaviour
     float depthRatio = 1f - _depthCalculator.GetDepth();
 
     Vector3 forwardMovement = transform.forward.normalized * _depthMovementModifier * depthRatio;
-    _targetLocation = _startingLocation + forwardMovement;
+    Vector3 horizontalMovement = transform.right * _horizontalMovementModifier * _depthCalculator.GetHorizontalRatio();
+
+    _targetLocation = _startingLocation + forwardMovement + horizontalMovement;
 
     transform.position = Vector3.MoveTowards(transform.position, _targetLocation, _movementSmoothSpeed * Time.deltaTime);
   }
